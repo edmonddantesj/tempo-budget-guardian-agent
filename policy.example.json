@@ -1,0 +1,9 @@
+{
+  "daily_budget_usdc": 15,
+  "category_caps_usdc": {
+    "food": 12,
+    "transport": 10
+  },
+  "blocked_merchants": ["scam-mart"],
+  "lane_by": "category"
+}

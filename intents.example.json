@@ -1,0 +1,6 @@
+[
+  {"date":"2026-02-15", "category":"food", "merchant":"ramen", "amount": 7.5},
+  {"date":"2026-02-15", "category":"food", "merchant":"pizza", "amount": 6.0},
+  {"date":"2026-02-15", "category":"transport", "merchant":"taxi", "amount": 4.0},
+  {"date":"2026-02-15", "category":"food", "merchant":"scam-mart", "amount": 1.0}
+]

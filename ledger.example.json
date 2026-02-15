@@ -1,0 +1,30 @@
+{
+  "events": [
+    {
+      "ts": "2026-02-15T00:45:44.573Z",
+      "date": "2026-02-15",
+      "category": "food",
+      "merchant": "ramen",
+      "amount": 7.5,
+      "nonce": {
+        "lane": "food",
+        "seq": 1
+      }
+    },
+    {
+      "ts": "2026-02-15T00:45:44.576Z",
+      "date": "2026-02-15",
+      "category": "transport",
+      "merchant": "taxi",
+      "amount": 4,
+      "nonce": {
+        "lane": "transport",
+        "seq": 1
+      }
+    }
+  ],
+  "nonce_state": {
+    "food": 3,
+    "transport": 1
+  }
+}
