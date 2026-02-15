@@ -29,6 +29,12 @@ cd projects/tempo-budget-guardian-agent
 npm run demo
 ```
 
+### Demo (slower, for screen recording)
+```bash
+cd projects/tempo-budget-guardian-agent
+DEMO_DELAY_MS=800 npm run demo
+```
+
 ## Repo structure
 - `src/guardian.js` — core logic
 - `policy.example.json` — sample policy

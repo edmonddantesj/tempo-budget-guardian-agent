@@ -139,10 +139,22 @@ function main() {
   const guardian = new BudgetGuardian({ policy, ledger });
 
   const out = [];
+
+  // Optional: slow down for screen-recorded demos.
+  // Set DEMO_DELAY_MS=800 (or similar) to pause between intents.
+  const delayMs = Number(process.env.DEMO_DELAY_MS || 0);
+  const sleepSync = (ms) => {
+    if (!ms || ms <= 0) return;
+    const sab = new SharedArrayBuffer(4);
+    const ia = new Int32Array(sab);
+    Atomics.wait(ia, 0, 0, ms);
+  };
+
   for (const intent of intents) {
     const decision = guardian.decide(intent);
     guardian.commit(intent, decision);
     out.push({ intent, decision });
+    sleepSync(delayMs);
   }
 
   fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
