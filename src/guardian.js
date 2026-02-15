@@ -143,6 +143,8 @@ function main() {
   // Optional: slow down for screen-recorded demos.
   // Set DEMO_DELAY_MS=800 (or similar) to pause between intents.
   const delayMs = Number(process.env.DEMO_DELAY_MS || 0);
+  const stream = String(process.env.DEMO_STREAM || '0') === '1';
+
   const sleepSync = (ms) => {
     if (!ms || ms <= 0) return;
     const sab = new SharedArrayBuffer(4);
@@ -150,19 +152,37 @@ function main() {
     Atomics.wait(ia, 0, 0, ms);
   };
 
-  for (const intent of intents) {
+  const pretty = (obj) => JSON.stringify(obj, null, 2);
+
+  for (let i = 0; i < intents.length; i++) {
+    const intent = intents[i];
     const decision = guardian.decide(intent);
     guardian.commit(intent, decision);
     out.push({ intent, decision });
+
+    if (stream) {
+      console.log(`\n--- Intent #${i + 1}/${intents.length} ---`);
+      console.log(pretty(intent));
+      console.log('Decision:');
+      console.log(pretty({ action: decision.action, reasons: decision.reasons, suggested_nonce: decision.suggested_nonce }));
+    }
+
     sleepSync(delayMs);
   }
 
   fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
-  console.log(JSON.stringify({
-    project: 'tempo-budget-guardian-agent',
-    version: '0.1.0',
-    out
-  }, null, 2));
+
+  if (!stream) {
+    // Default: single JSON blob (good for machines)
+    console.log(JSON.stringify({
+      project: 'tempo-budget-guardian-agent',
+      version: '0.1.0',
+      out
+    }, null, 2));
+  } else {
+    console.log('\n=== Summary (JSON) ===');
+    console.log(pretty({ project: 'tempo-budget-guardian-agent', version: '0.1.0', out }));
+  }
 }
 
 main();
