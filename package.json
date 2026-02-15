@@ -1,13 +1,19 @@
 {
   "name": "tempo-budget-guardian-agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
-  "description": "Canteen x Tempo Hackathon — 2D Nonce Budget Guardian Agent (simulator + demo)",
+  "description": "Canteen x Tempo Hackathon — 2D Nonce Budget Guardian Agent (simulator + demo + Track 3 on-chain receipts)",
   "license": "MIT",
   "scripts": {
     "demo": "POLICY=policy.example.json LEDGER=ledger.example.json INTENTS=intents.example.json node src/guardian.js",
+    "doctor": "node src/doctor.js",
+    "demo:track3": "node src/demo_track3.js",
+    "verify:track3": "node src/verify_from_out.js",
     "run": "node src/guardian.js",
     "policy": "node src/policy_from_text.js"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0"
   }
 }

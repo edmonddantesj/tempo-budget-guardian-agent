@@ -2,6 +2,26 @@
 
 Hackathon: **Canteen x Tempo Hackathon**
 
+## Judges Quickstart (Track 3)
+```bash
+git clone https://github.com/edmonddantesj/tempo-budget-guardian-agent
+cd tempo-budget-guardian-agent
+npm install
+cp .env.example .env
+# set TEMPO_RPC_URL=https://rpc.moderato.tempo.xyz and a funded testnet TEMPO_PRIVATE_KEY
+npm run doctor
+npm run demo:track3
+npm run verify:track3
+# proof report: out/report.md
+```
+
+## Proof Links (Tempo Explorer)
+Latest run proofs (3 cases) + verifier:
+- Case 1 (APPROVE): https://explore.tempo.xyz/tx/0x915fa070cc9f1879e9b717000a86f4acdbea00aa41b06869091781db2609c5f8
+- Case 2 (DENY): https://explore.tempo.xyz/tx/0x7f98629831d9759c7631a4edc3d2a628a657f5962359cda9de0804a6c4033c75
+- Case 3 (APPROVE, different lane): https://explore.tempo.xyz/tx/0x7edce5f3f34de7c2a5ff71e464501a28ab40440de53636e78349d3f883408994
+- Verification: `npm run verify:track3` → PASS=3
+
 ## One-line
 An **agentic policy layer** that approves/denies payment intents under a daily/category budget, while producing **parallel-safe 2D nonce suggestions** (lane + sequence) for Tempo-style workflows.
 
@@ -21,14 +41,43 @@ This MVP simulates a **Budget Guardian Agent**:
 > Integration with Tempo signing/RPC can be added; this MVP focuses on core logic + auditability.
 
 ## Tracks fit
-- **AI Agents & Automation** (agentic approvals + policy)
-- Stablecoin Infrastructure (budget guardrails, nonce management)
+- **Track 3: AI Agents & Automation** (agentic approvals + policy + verifiable receipts)
+- Track 2: Stablecoin Infrastructure (budget guardrails, nonce management)
 
 ## Demo (local)
 ```bash
 cd projects/tempo-budget-guardian-agent
+npm install
 npm run demo
 ```
+
+## Track 3 demo (Tempo receipts / P0)
+This generates **deterministic decision digests** for an APPROVE and a DENY case and (optionally) anchors them to Tempo testnet as tamper-evident receipts.
+
+1) Copy env template:
+```bash
+cp .env.example .env
+# edit .env: set TEMPO_RPC_URL + TEMPO_PRIVATE_KEY (testnet faucet-funded)
+```
+
+2) Preflight:
+```bash
+npm run doctor
+```
+
+3) Run Track 3 demo:
+```bash
+npm run demo:track3
+```
+
+4) Verify receipts (optional but recommended):
+```bash
+npm run verify:track3
+```
+
+Outputs:
+- `out/report.md` (judge-friendly proof report)
+- `out/track3_results.json`
 
 ## Natural-language policy (agentic UX)
 Generate `policy.json` from a short instruction:
