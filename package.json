@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "demo": "POLICY=policy.example.json LEDGER=ledger.example.json INTENTS=intents.example.json node src/guardian.js",
-    "run": "node src/guardian.js"
+    "run": "node src/guardian.js",
+    "policy": "node src/policy_from_text.js"
   }
 }

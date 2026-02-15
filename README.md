@@ -16,6 +16,7 @@ This MVP simulates a **Budget Guardian Agent**:
 - Evaluates each payment intent against a policy (daily budget + category caps + blocked merchants)
 - Assigns a **2D nonce** (`lane`, `seq`) to each intent so parallel flows remain ordered per lane
 - Writes an auditable ledger of approved intents
+- **(Agentic UX)** Can generate a policy file from natural language (lightweight parser)
 
 > Integration with Tempo signing/RPC can be added; this MVP focuses on core logic + auditability.
 
@@ -27,6 +28,19 @@ This MVP simulates a **Budget Guardian Agent**:
 ```bash
 cd projects/tempo-budget-guardian-agent
 npm run demo
+```
+
+## Natural-language policy (agentic UX)
+Generate `policy.json` from a short instruction:
+```bash
+cd projects/tempo-budget-guardian-agent
+node src/policy_from_text.js --text "daily 15, food 12, transport 10, block scam-mart" --out policy.json
+# or Korean-ish
+node src/policy_from_text.js --text "오늘 예산 15, food 12, transport 10, scam-mart 금지" --out policy.json
+```
+Then run with it:
+```bash
+POLICY=policy.json LEDGER=ledger.example.json INTENTS=intents.example.json node src/guardian.js
 ```
 
 ### Demo (slower, for screen recording)
