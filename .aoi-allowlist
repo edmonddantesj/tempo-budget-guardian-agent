@@ -23,3 +23,9 @@ policy.example.json
 
 # Proofs
 memory_track3_proofs_latest.md
+
+# AOI security gate (CI + local)
+.gitignore
+scripts/
+aoi-core/
+aoi_core/

@@ -4,3 +4,8 @@ out/
 *.log
 policy.json
 true
+
+# AOI state (local-only)
+aoi-core/state/approvals/
+aoi-core/state/proofs/
+aoi-core/state/ci_artifacts/
