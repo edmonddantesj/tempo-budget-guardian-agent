@@ -39,6 +39,49 @@ DEFAULT_SECRET_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("PRIVATE_KEY_HEX", re.compile(r"0x[a-fA-F0-9]{64}")),
 ]
 
+_TXHASH_CONTEXT_RE = re.compile(
+    r"(?i)(transaction[_\- ]?hash|tx[_\- ]?hash|txid|/tx/|etherscan\.io/tx/|bscscan\.com/tx/|polygonscan\.com/tx/)"
+)
+_SECRET_CONTEXT_RE = re.compile(r"(?i)(private[_\- ]?key|secret|seed|mnemonic)")
+
+
+def is_probable_tx_hash(*, file_path: Path, content: str, start: int, end: int) -> bool:
+    """Return True if a 0x+64hex match looks like an EVM transaction hash, not a private key.
+
+    Rationale: tx hashes are routinely included in docs/reports/manifests and should not fail the gate.
+    We still want to flag actual secrets, so we require surrounding context to mention tx/transaction hash and
+    we refuse the exception when nearby text suggests a private/secret key.
+    """
+    lo = max(0, start - 160)
+    hi = min(len(content), end + 160)
+    window = content[lo:hi].lower()
+
+    # If the neighborhood looks like a real secret, do NOT exempt.
+    if _SECRET_CONTEXT_RE.search(window):
+        return False
+
+    # Common explicit tx-hash contexts (JSON keys, URLs, prose).
+    if _TXHASH_CONTEXT_RE.search(window):
+        return True
+
+    # Line-level heuristic: 'tx' and 'hash' on the same line.
+    line_start = content.rfind('\n', 0, start) + 1
+    line_end = content.find('\n', end)
+    if line_end == -1:
+        line_end = len(content)
+    line = content[line_start:line_end].lower()
+    if ('tx' in line) and ('hash' in line):
+        return True
+
+    # File-path hint (reports/manifests) + minimal context.
+    rel = str(file_path.as_posix()).lower()
+    if any(tok in rel for tok in ['report', 'reports', 'manifest']):
+        if ('tx' in window) or ('hash' in window):
+            return True
+
+    return False
+
+
 
 def scan_repo_snapshot(repo_dir: Path) -> list[GateFinding]:
     findings: list[GateFinding] = []
@@ -105,15 +148,22 @@ def scan_repo_snapshot(repo_dir: Path) -> list[GateFinding]:
             continue
 
         for label, pat in DEFAULT_SECRET_PATTERNS:
-            if pat.search(content):
-                findings.append(
-                    GateFinding(
-                        rule_id="secrets.pattern.match",
-                        severity="high",
-                        message=f"Potential secret detected ({label}) in file {p.relative_to(repo_dir)}.",
-                        evidence={"file": str(p.relative_to(repo_dir)), "pattern": label},
-                    )
+            m = pat.search(content)
+            if not m:
+                continue
+
+            # Exception: EVM tx hashes can match the same 0x+64hex shape as private keys.
+            if label == 'PRIVATE_KEY_HEX' and is_probable_tx_hash(file_path=p.relative_to(repo_dir), content=content, start=m.start(), end=m.end()):
+                continue
+
+            findings.append(
+                GateFinding(
+                    rule_id="secrets.pattern.match",
+                    severity="high",
+                    message=f"Potential secret detected ({label}) in file {p.relative_to(repo_dir)}.",
+                    evidence={"file": str(p.relative_to(repo_dir)), "pattern": label},
                 )
+            )
 
     return findings
 
